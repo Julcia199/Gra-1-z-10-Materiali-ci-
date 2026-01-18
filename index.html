@@ -1,0 +1,29 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="UTF-8">
+  <title>Gra</title>
+</head>
+<h3>⏱️ Pozostały czas: <span id="timer">0</span> s</h3>
+<hr>
+<p id="timeMessage" style="color:red; font-weight:bold;"></p>
+
+<audio id="endSound" src="/sounds/end.mp3"></audio>
+
+
+<body>
+
+<h2>Dołącz do gry</h2>
+
+<input id="nick" placeholder="Nick">
+<input type="file" id="avatar">
+<button onclick="join()">Dołącz</button>
+<h3>Gracze:</h3>
+<div id="players"></div>
+
+
+<script src="/socket.io/socket.io.js"></script>
+<script src="client.js"></script>
+
+</body>
+</html>

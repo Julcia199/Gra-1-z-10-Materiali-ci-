@@ -1,0 +1,16 @@
+{
+  "name": "gra-multiplayer",
+  "version": "1.0.0",
+  "description": "Gra multiplayer z panelem admina",
+  "main": "server.js",
+  "scripts": {
+    "start": "node server.js"
+  },
+  "author": "",
+  "license": "ISC",
+  "type": "commonjs",
+  "dependencies": {
+    "express": "^5.2.1",
+    "socket.io": "^4.8.3"
+  }
+}

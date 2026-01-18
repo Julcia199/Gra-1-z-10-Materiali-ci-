@@ -1,0 +1,115 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="UTF-8">
+  <title>Panel Admina</title>
+</head>
+<body>
+
+<h2>Panel Admina</h2>
+
+<input id="password" type="password" placeholder="Hasło admina">
+<button onclick="login()">Zaloguj</button>
+
+<hr>
+
+<h3>⏱️ Timer</h3>
+
+<input id="seconds" type="number" placeholder="Czas w sekundach">
+<button onclick="startTimer()">▶️ Start</button>
+<button onclick="stopTimer()">⏹ Stop</button>
+
+<p>Pozostały czas: <b><span id="timer">0</span></b> s</p>
+<p id="timeMessage" style="color:red; font-weight:bold;"></p>
+
+<audio id="endSound" src="/sounds/end.mp3"></audio>
+
+
+<hr>
+
+<div id="players"></div>
+
+<script src="/socket.io/socket.io.js"></script>
+<script>
+const socket = io();
+let adminPassword = "";
+
+function login() {
+  adminPassword = document.getElementById("password").value;
+  alert("Zalogowano jako admin");
+}
+
+// ===== TIMER =====
+function startTimer() {
+  const seconds = document.getElementById("seconds").value;
+
+  socket.emit("startTimer", {
+    seconds: seconds,
+    password: adminPassword
+  });
+}
+
+function stopTimer() {
+  socket.emit("stopTimer", adminPassword);
+}
+
+socket.on("timerUpdate", time => {
+  document.getElementById("timer").innerText = time;
+});
+
+socket.on("timeEnded", () => {
+  socket.on("timeEnded", () => {
+  document.getElementById("timeMessage").innerText = "⏰ KONIEC CZASU";
+  document.getElementById("endSound").play();
+});
+
+});
+
+// ===== GRACZE =====
+socket.on("playersUpdate", players => {
+  const div = document.getElementById("players");
+  div.innerHTML = "";
+
+  Object.entries(players).forEach(([id, p]) => {
+    let buttons = "";
+
+    if (p.alive) {
+      buttons = `
+        <button onclick="loseLife('${id}')">-1 życie</button>
+        <button onclick="addLife('${id}')">+1 życie</button>
+      `;
+    } else {
+      buttons = `
+        <span>❌ PRZEGRANY</span>
+        <button onclick="addLife('${id}')">+1 życie</button>
+      `;
+    }
+
+    div.innerHTML += `
+      <div style="margin-bottom:10px">
+        <img src="${p.avatar}" width="40">
+        <b>${p.nick}</b>
+        ❤️ ${p.lives}
+        ${buttons}
+      </div>
+    `;
+  });
+});
+
+function loseLife(id) {
+  socket.emit("adminLoseLife", {
+    playerId: id,
+    password: adminPassword
+  });
+}
+
+function addLife(id) {
+  socket.emit("adminAddLife", {
+    playerId: id,
+    password: adminPassword
+  });
+}
+</script>
+
+</body>
+</html>
